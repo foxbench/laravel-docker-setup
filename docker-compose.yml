@@ -1,0 +1,27 @@
+version: '3.8'
+
+
+services:
+  database:
+    image: mariadb:10.9
+    container_name: database
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: secret
+      MARIADB_DATABASE: automania
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - '43306:3306'
+
+  php-apache:
+    container_name: php-apache
+    build:
+      context: ./php
+    ports:
+      - '43308:80'
+    volumes:
+      - ./src:/var/www/automania
+      - ./apache/default.conf:/etc/apache2/sites-enabled/000-default.conf
+    depends_on:
+      - database
